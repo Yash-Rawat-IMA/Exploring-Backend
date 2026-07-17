@@ -7,30 +7,34 @@ const app = express()
 
 const port = 3000
 
+app.use(express.json())
 app.use((req, res, next) => {
-    console.log(`Response received on ${req.url}`)
-    next();
+    console.log(`${req.method} ${req.url}`);
+    next()
 })
 
-app.get('/', (req, res) => {
-    res.send(`Server is running on port: ${port}`)
+let sportsData = []
+let nextId = 1
+
+app.post('/sports', (req, res) => {
+    const { name, players } = req.body
+    const newSport = { id: nextId++, name, players }
+    sportsData.push(newSport)
+    console.log(`${newSport.name} is added`)
+    res.status(201).send(newSport)
 })
 
-app.get('/profile', (req, res) => {
-    res.send(`Server is running on port: ${port}, and now this is your profile`)
-})
-
-app.get('/profile/:username', (req, res) => {
-
-    const formattedName = req.params.username
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-
-    res.send(`Server is running on port: ${port}, and now this is your profile: ${formattedName}`)
-})
-app.get('/contact', (req, res) => {
-    res.send(`Server is running on port: ${port}, and now this is your contact`)
+app.get('/sports', (req, res) => {
+    console.log(sportsData)
+    const html = `
+        <h1>Current Sports List</h1>
+        <ul>
+            ${sportsData.map(
+                sport => `<li>${sport.name} have ${sport.players} players in each team</li>`
+            ).join('')}
+        </ul>
+    `
+    res.status(200).send(html)
 })
 
 app.listen(port, () => {

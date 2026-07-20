@@ -13,6 +13,8 @@ app.use(express.json())
 
 // Parses URL-encoded form data (typically from HTML forms).
 app.use(express.urlencoded({extended:true}))
+
+// Custom middleware
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
     next()
@@ -35,9 +37,9 @@ app.get('/sports', (req, res) => {
     console.log(sportsData)
     const html = `
         <h1>Current Sports List</h1>
-        <ul style="list-style:none; padding:0px; margin:0px; background-color:gray; color:white;">
+        <ul style="list-style:none; padding:0px; margin:0px;">
             ${sportsData.map(
-                sport => `<li>${sport.name} have ${sport.players} players in each team</li>`
+                sport => `<li style="list-style:none; padding:5px; margin:5px; background-color:gray; color:white;">${sport.name} have ${sport.players} players in each team</li>`
             ).join('')}
         </ul>
     `

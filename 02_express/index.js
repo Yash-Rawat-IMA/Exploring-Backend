@@ -1,11 +1,12 @@
 // const express = require('express')
 // Above one if using common JS
+import { config } from 'dotenv'
 import express from 'express'
 // this one used while using ES modules, package.json has "type": "module"
-
+import 'dotenv/config'
 const app = express()
 
-const port = 3000
+const port = process.env.PORT || 3000
 
 // These two middleware functions tell Express how to parse incoming request bodies.
 // Parses requests with a JSON body.

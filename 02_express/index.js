@@ -4,9 +4,19 @@ import { config } from 'dotenv'
 import express from 'express'
 // this one used while using ES modules, package.json has "type": "module"
 import 'dotenv/config'
+
+// import logger and morgan
+import logger from './logger.js'
+import morgan from 'morgan'
+
+// creating app
 const app = express()
 
+// creating port (importing from env file or using directly if not found)
 const port = process.env.PORT || 3000
+
+// creating morgan format for logging
+const morganFormat = ':method :url :status :response-time ms';
 
 // These two middleware functions tell Express how to parse incoming request bodies.
 // Parses requests with a JSON body.
@@ -15,11 +25,26 @@ app.use(express.json())
 // Parses URL-encoded form data (typically from HTML forms).
 app.use(express.urlencoded({extended:true}))
 
-// Custom middleware
+// Custom middleware to log method and url on the console
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
     next()
 })
+
+// logger middleware
+app.use(morgan(morganFormat, {
+    stream: {
+        write: (message) => {
+            const logObject = {
+                method: message.split(' ')[0],
+                url: message.split(' ')[1],
+                status: message.split(' ')[2], 
+                responseTime: message.split(' ')[3], 
+            }
+            logger.info(JSON.stringify(logObject))
+        }
+    }
+})) 
 
 let sportsData = []
 let nextId = 1
